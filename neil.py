@@ -4,11 +4,11 @@ import cv2
 import numpy as np
 import pytesseract
 
-initialCS = 0
 
-minionCounter = 0
 
-def check_cs(self):
+
+
+def check_cs():
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
     pyautogui.position()
@@ -28,10 +28,13 @@ def check_cs(self):
     custom_config = r'--oem 3 --psm 6'
     text = pytesseract.image_to_string(thresholded, config=custom_config)
 
-    global initialCS
-    initialCS = int(text)
+    
+    return text
 
-def minion_counter(self):
+def minion_counter():
+
+    minionCounter = 0
+
     im1 = pyautogui.screenshot('Game.png')
     im2 = cv2.imread('Game.png')
     im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2RGB)
@@ -50,11 +53,13 @@ def minion_counter(self):
     locations2 = np.where(result2 >= threshold2)
 
     for pt in zip(*locations[::-1]):
-        global minionCounter
+        
         minionCounter += 1
     for pt in zip(*locations2[::-1]):
-        global minionCounter
+        
         minionCounter += 1
 
+    return minionCounter
 
-
+print(check_cs())
+print(minion_counter())
