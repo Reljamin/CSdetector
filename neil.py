@@ -57,6 +57,4 @@ def minion_counter(self):
         minionCounter += 1
 
 
-while True:
-    check_cs(self)
 
