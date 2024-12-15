@@ -61,3 +61,4 @@ plt.imshow(result1)
 plt.show()
 
 print(minionCounter)
+
