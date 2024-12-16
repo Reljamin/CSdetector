@@ -4,11 +4,13 @@ import cv2
 import numpy as np
 import pytesseract
 from matplotlib import pyplot as plt
+from playsound import playsound
+import os
 #from pynput.keyboard import Key, Controller
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-
+print()
 
 def get_cs():
     #pyautogui.position()
@@ -16,9 +18,11 @@ def get_cs():
     #print(pyautogui.position())
     #print(pyautogui.position())
 
-    im1 = pyautogui.screenshot('CSnum.png', region=(1779, 2, 33, 20))
+    im1 = pyautogui.screenshot(r".\image_assets\CSnum.png", region=(1775, 2, 40, 20))
 
-    imgRead = cv2.imread('CSnum.png')
+    
+
+    imgRead = cv2.imread(r".\image_assets\CSnum.png")
 
     gray = cv2.cvtColor(imgRead, cv2.COLOR_BGR2GRAY)
     colored = cv2.cvtColor(imgRead, cv2.COLOR_BGR2RGB)
@@ -40,12 +44,14 @@ def get_livingMinions():
 
     minionCounter = 0
 
-    game_ss = pyautogui.screenshot('Game.png')
-    game_img = cv2.imread('Game.png')
+    #if os.path.exists("./image_assets/Game.png"):
+        #os.remove("./image_assets/Game.png")
+    game_ss = pyautogui.screenshot(r".\image_assets\Game.png")
+    game_img = cv2.imread(r".\image_assets\Game.png")
     game_img = cv2.cvtColor(game_img, cv2.COLOR_BGR2RGB)
-    hpbar_img = cv2.imread('minionhpbar.png')
+    hpbar_img = cv2.imread(r".\image_assets\minionhpbar.png")
     hpbar_img = cv2.cvtColor(hpbar_img, cv2.COLOR_BGR2RGB)
-    hpbar2_img = cv2.imread('lowhpbar.png')
+    hpbar2_img = cv2.imread(r".\image_assets\lowhpbar.png")
     hpbar2_img = cv2.cvtColor(hpbar2_img, cv2.COLOR_BGR2RGB)
 
     w, h = hpbar_img.shape[:-1]
@@ -67,8 +73,8 @@ def get_livingMinions():
         cv2.rectangle(game_img, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
         minionCounter += 1
 
-    result = cv2.imwrite('result.png', game_img)
-    result1 = cv2.imread('result.png')
+    result = cv2.imwrite(r".\image_assets\result.png", game_img)
+    result1 = cv2.imread(r".\image_assets\result.png")
 
     #plt.subplot(1, 1, 1)
     #plt.imshow(result1)
@@ -100,7 +106,7 @@ counter = 0
 curCS = oldCS
 missedCSCounter = 0
 
-while counter < 5 and curCS < 300:
+while counter < 3 and curCS < 300:
     time.sleep(2)
 
 
@@ -108,17 +114,22 @@ while counter < 5 and curCS < 300:
     #print("old Minions: " + str(oldMinions))
 
     curCS = int(get_cs())
-    #print("Current CS Count: " + str(curCS))
+    print("Current CS Count: " + str(curCS))
     curMinions = get_livingMinions()
-    #print("current Minions: " + str(curMinions))
+    print("current Minions: " + str(curMinions))
     missedCS = getMissedCS(oldMinions, curMinions, oldCS, curCS)
     missedCSCounter += missedCS
 
-    #print("Missed CS Count: " + str(missedCSCounter))
+    print("Missed CS Count: " + str(missedCS))
 
     oldCS = curCS
     oldMinions = curMinions
 
+    if missedCS > 0:
+        playsound(r".\audio_assets\pipe.mp3")
+
+
+    print("Total missed CS Count: " + str(missedCSCounter))
     counter += 1
     
 
