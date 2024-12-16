@@ -104,17 +104,17 @@ while counter < 5 and curCS < 300:
     time.sleep(2)
 
 
-    print("old CS Count: " + str(oldCS))
-    print("old Minions: " + str(oldMinions))
+    #print("old CS Count: " + str(oldCS))
+    #print("old Minions: " + str(oldMinions))
 
     curCS = int(get_cs())
-    print("Current CS Count: " + str(curCS))
+    #print("Current CS Count: " + str(curCS))
     curMinions = get_livingMinions()
-    print("current Minions: " + str(curMinions))
+    #print("current Minions: " + str(curMinions))
     missedCS = getMissedCS(oldMinions, curMinions, oldCS, curCS)
     missedCSCounter += missedCS
 
-    print("Missed CS Count: " + str(missedCSCounter))
+    #print("Missed CS Count: " + str(missedCSCounter))
 
     oldCS = curCS
     oldMinions = curMinions
