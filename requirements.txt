@@ -1,0 +1,6 @@
+pyautogui
+opencv-python
+numpy
+pytesseract
+matplotlib
+playsound

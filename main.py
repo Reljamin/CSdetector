@@ -5,7 +5,9 @@ import numpy as np
 import pytesseract
 from matplotlib import pyplot as plt
 from playsound import playsound
+from pynput import keyboard
 import os
+import threading
 #from pynput.keyboard import Key, Controller
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -54,7 +56,7 @@ def get_livingMinions():
     hpbar2_img = cv2.imread(r".\image_assets\lowhpbar.png")
     hpbar2_img = cv2.cvtColor(hpbar2_img, cv2.COLOR_BGR2RGB)
 
-    w, h = hpbar_img.shape[:-1]
+    h, w = hpbar_img.shape[:2]
 
     res = cv2.matchTemplate(game_img, hpbar_img, cv2.TM_CCOEFF_NORMED)
     res2 = cv2.matchTemplate(game_img, hpbar2_img, cv2.TM_CCOEFF_NORMED)
@@ -106,39 +108,72 @@ counter = 0
 curCS = oldCS
 missedCSCounter = 0
 
-while counter < 3 and curCS < 300:
-    time.sleep(2)
 
 
-    #print("old CS Count: " + str(oldCS))
-    #print("old Minions: " + str(oldMinions))
+running = False
+stop_flag = False
 
-    curCS = int(get_cs())
-    print("Current CS Count: " + str(curCS))
-    curMinions = get_livingMinions()
-    print("current Minions: " + str(curMinions))
-    missedCS = getMissedCS(oldMinions, curMinions, oldCS, curCS)
-    missedCSCounter += missedCS
+def run_script():
+    global running, stop_flag
 
-    print("Missed CS Count: " + str(missedCS))
+    oldCS = int(get_cs())
+    oldMinions = 0
+    counter = 0
+    missedCSCounter = 0
+    curCS = oldCS
 
-    oldCS = curCS
-    oldMinions = curMinions
+    print("[Script started]")
 
-    if missedCS > 0:
-        playsound(r".\audio_assets\pipe.mp3")
+    while running and not stop_flag and curCS < 300:
+        time.sleep(2)
 
+        curCS = int(get_cs())
+        print("Current CS Count:", curCS)
 
-    print("Total missed CS Count: " + str(missedCSCounter))
-    counter += 1
+        curMinions = get_livingMinions()
+        print("Current Minions:", curMinions)
+
+        missedCS = getMissedCS(oldMinions, curMinions, oldCS, curCS)
+        missedCSCounter += missedCS
+
+        if missedCS > 0:
+            playsound(r".\audio_assets\pipe.mp3")
+
+        print("Missed CS this cycle:", missedCS)
+        print("Total missed CS:", missedCSCounter)
+
+        oldCS = curCS
+        oldMinions = curMinions
+        counter += 1
+
+    running = False
+    print("[Script stopped]")
+
+def start_script():
+    global running
+    if not running:
+        running = True
+        threading.Thread(target=run_script, daemon=True).start()
+
+def stop_script():
+    global running, stop_flag
+    stop_flag = True
+    running = False
+    print("[Stop requested]")
+
+def on_press(key):
+    if key == keyboard.Key.f8:
+        start_script()
+    elif key == keyboard.Key.f9:
+        stop_script()
+
+def main():
     
+    with keyboard.Listener(on_press=on_press) as listener:
+        listener.join()
 
-    
-
-
-
-
-
+if __name__ == "__main__":
+    main()
 
 #print(get_cs())
 #print(get_livingMinions())
